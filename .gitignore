@@ -1,0 +1,7 @@
+.vscode
+__pycache__
+testing.xlsm
+~$testing.xlsm
+ASRs/*.docx
+~$testing - Copy.xlsm
+program_data/templates/~$R_servo_template_2022.docx

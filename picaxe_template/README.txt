@@ -1,0 +1,1 @@
+Folder for holding pickaxe excel files for processing.  Files will need to be moved to main directory to run the macro.

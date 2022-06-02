@@ -4,9 +4,7 @@
 #
 #  Source repo: https://code.usgs.gov/koocanusa/servo-asr-generator
 #
-#  Script for generating servo ASRs based on an ASR template.
-#  If wb = xw.Book.caller() is enabled, the servo excel template macro can be used to run the script.
-#  Alternativley a workbook can be defined manually and ran from python from within this script.
+#  Script for generating servo ASRs as PDFs.
 #  The README.md file has further instructions.
 
 
@@ -86,14 +84,14 @@ def main():
             )
     # Parse ship date
     try:
-        ship_date = str(station_info["ship_date"].strftime("%m/%d/%Y"))
+        ship_date = pd.to_datetime(station_info["ship_date"]).strftime("%m/%d/%Y")
     except AttributeError:
         ship_date = datetime.now().strftime("%m/%d/%Y")
     # Parse sp cond
     try:
         sCond = str(int(station_info["SC"]))
-    except ValueError:
-        sCond = "250e"
+    except (ValueError, TypeError):
+        sCond = "250 E"
     # Parse blank datetime
     try:
         if station_info["blank_datetime"] is not None:
@@ -161,10 +159,10 @@ def main():
             sample_datetime = pd.to_datetime(date)
             sample_datetime_fmt = sample_datetime.strftime("%Y%m%d %H%M")
         except AttributeError:
-            error = f"Invalid sample datetime {date}.  Could not be parsed by pd.to_datetime()"
+            error = f"Invalid sample datetime {date}.  Could not be parsed by pd.to_datetime().  Exiting now."
             print(error)
             log_sheet.range((find_last_row(log_sheet), 1)).value = error
-            continue
+            break
 
         # End date is 7 days later, inlcuding the first day, so add 6 to start date.
         sample_datetime_end = sample_datetime + pd.Timedelta(days=6)
@@ -226,7 +224,8 @@ def main():
         wb.sheets("blank").range("P12:W12").value = list(stationID)
         wb.sheets("blank").range("I28").value = station_name
         wb.sheets("blank").range("AJ52").value = ship_date
-        wb.sheets("blank").range("H56").value = sCond
+        wb.sheets("blank").range("H56").value = "2"
+        wb.sheets("blank").range("K56").value = "E"
 
         # No depth associated with the river site.
         if stationID == "12301933":
@@ -260,4 +259,4 @@ def main():
     log_sheet.range((find_last_row(log_sheet), 1)).value = "Done!"
 
 
-main()
+# main()
